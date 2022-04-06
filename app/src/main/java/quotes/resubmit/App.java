@@ -3,8 +3,10 @@
  */
 package quotes.resubmit;
 import com.google.gson.Gson;
-import java.io.BufferedReader;
-import java.io.IOException;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,18 +14,44 @@ import java.util.Random;
 
 public class App {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // Read file
-        String path = "C:\\Users\\Rawzi Homran\\quotes-resubmit\\app\\src\\main\\java\\quotes\\resubmit\\recentquotes.json" ;
+        String path = "C:\\Users\\Rawzi Homran\\quotes-resubmit\\app\\src\\main\\java\\quotes\\resubmit\\recentquotes.json";
         String json = readJsonFile(path);
 
         Gson gson = new Gson();
 
         Quotes[] quotesArray = gson.fromJson(json, Quotes[].class);
         Random random = new Random();
-        int size = quotesArray.length - 1 ;
-        int number = random.nextInt(size + 1 );
+        int size = quotesArray.length - 1;
+        int number = random.nextInt(size + 1);
         System.out.println(quotesArray[number]);
+
+
+        //*********************************************lab09*******************************************************
+
+
+        URL url = new URL("http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en");
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        String quoteAPI = bufferedReader.readLine();
+        System.out.println(quoteAPI);
+
+        gson = new Gson();
+        Formismatic saveTo = gson.fromJson(quoteAPI, Formismatic.class);
+
+        System.out.println(saveTo);
+
+        File dittoFile = new File("C:\\Users\\Rawzi Homran\\quotes-resubmit\\app\\src\\main\\resources\\QuotesAPI.json");
+        try (FileWriter writer = new FileWriter(dittoFile)) {
+            gson.toJson(saveTo, writer);
+        }catch (IOException error) {
+            System.out.println("Quote not be saved");
+        }
     }
 
     public static String readJsonFile(String path) {
