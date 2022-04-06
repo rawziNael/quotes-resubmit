@@ -12,6 +12,18 @@ public class Quotes {
         this.text = text;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getLikes() {
+        return likes;
+    }
+
+    public String getText() {
+        return text;
+    }
+
     @Override
     public String toString() {
         return "Quotes{" +
